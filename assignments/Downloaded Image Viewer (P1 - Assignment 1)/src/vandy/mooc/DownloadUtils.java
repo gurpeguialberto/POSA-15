@@ -33,7 +33,7 @@ public class DownloadUtils {
      * purposes, feel free to change this variable to false so it
      * actually downloads the image from a remote server.
      */
-    static final boolean DOWNLOAD_OFFLINE = false;
+    static final boolean DOWNLOAD_OFFLINE = true;
     
     /**
      * The resource that we write to the file system in offline

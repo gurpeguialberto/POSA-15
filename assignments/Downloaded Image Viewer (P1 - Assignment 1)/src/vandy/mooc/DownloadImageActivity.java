@@ -1,9 +1,15 @@
 package vandy.mooc;
 
+import java.io.InputStream;
+import java.net.URL;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * An Activity that downloads an image, stores it in a local file on
@@ -27,10 +33,14 @@ public class DownloadImageActivity extends Activity {
         // Always call super class for necessary
         // initialization/implementation.
         // @@ TODO -- you fill in here.
-
+    	super.onCreate(savedInstanceState);
+    	
         // Get the URL associated with the Intent data.
         // @@ TODO -- you fill in here.
-
+    	final Intent intent = getIntent();
+    	String URLString = intent.getStringExtra("myData");
+    	Uri url=Uri.parse(intent.getStringExtra("myData"));
+    	
         // Download the image in the background, create an Intent that
         // contains the path to the image file, and set this as the
         // result of the Activity.
@@ -41,5 +51,15 @@ public class DownloadImageActivity extends Activity {
         // methods should be called in the background thread.  See
         // http://stackoverflow.com/questions/20412871/is-it-safe-to-finish-an-android-activity-from-a-background-thread
         // for more discussion about this topic.
+    	
+    	Intent mIntentToReturnUrl = new Intent(Intent.ACTION_VIEW);
+    	DownloadUtils mDownloadUtils = new DownloadUtils();
+    	mIntentToReturnUrl.setData(mDownloadUtils.downloadImage(getApplicationContext(), url));
+    	
+        setResult(RESULT_OK, mIntentToReturnUrl);
+    	finish();
+    	
+    	
     }
+   
 }

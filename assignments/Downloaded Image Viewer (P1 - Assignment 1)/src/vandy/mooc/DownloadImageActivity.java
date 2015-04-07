@@ -23,15 +23,31 @@ public class DownloadImageActivity extends Activity {
      */
     private final String TAG = getClass().getSimpleName();
     
+    /**
+     * background Thread used to make the downloading work 
+     */
     private Thread mThread;
-
+    
+    /**
+     * Reference to UI Thread
+     */
     private Handler mHandler = new Handler(Looper.getMainLooper());
     
+    /**
+     * Uri. Path of image file stored 
+     */
     private Uri urlImage;
     
+    /**
+     * Uri. Image resource to download from Internet
+     */
     private Uri urlToDownload;
     
+    /**
+     * Intent to give back the path to the dowloaded file 
+     */
     Intent mIntentToReturnUrl;
+    
     /**
      * Hook method called when a new instance of Activity is created.
      * One time initialization code goes here, e.g., UI layout and
@@ -50,9 +66,6 @@ public class DownloadImageActivity extends Activity {
         // @@ TODO -- you fill in here.
     	
     	urlToDownload = getIntent().getData();
-    	Log.d(TAG,
-                "DownloadImageActivity::onCreate(): urlToDownload" + urlToDownload.toString());
-    	
     	
         // Download the image in the background, create an Intent that
         // contains the path to the image file, and set this as the
@@ -71,22 +84,20 @@ public class DownloadImageActivity extends Activity {
              public void run() {
             	 
             	 urlImage = DownloadUtils.downloadImage(getApplicationContext(), urlToDownload);
-            	 Log.d(TAG,
-                         "THREAD::DownloadImageActivity::onCreate(): urlImageToString: " + urlImage.toString());
+            	 
             	 mIntentToReturnUrl = new Intent();
             	 mIntentToReturnUrl.setData(urlImage);
                  setResult(RESULT_OK, mIntentToReturnUrl);   
             	 
+                 // finish this Activity from UI Thread
             	 mHandler.post(new Runnable() {
 
  					@Override
  					public void run() {
- 						Log.i(TAG, "Thread is running:" + Thread.currentThread().getName());
+ 						Log.d(TAG, "This Thread is running...:" + Thread.currentThread().getName());
  						DownloadImageActivity.this.finish();
  					}
-
- 				}); 
-                             	 
+ 				});                              	 
              }             
          };
     	

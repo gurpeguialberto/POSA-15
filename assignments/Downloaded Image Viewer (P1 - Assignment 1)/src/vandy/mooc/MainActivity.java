@@ -213,9 +213,11 @@ public class MainActivity extends LifecycleLoggingActivity {
         }
         else {
             Toast.makeText(this,
-                           "Invalid URL",
-                           Toast.LENGTH_SHORT).show();
-            return null;
+                           "Invalid URL...using default URL...",
+                           Toast.LENGTH_LONG).show();
+            url = mDefaultUrl;
+            mUrlEditText.setText("");
+            return url;
         } 
     }
 

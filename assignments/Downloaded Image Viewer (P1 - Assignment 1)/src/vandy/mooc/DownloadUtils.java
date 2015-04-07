@@ -79,7 +79,8 @@ public class DownloadUtils {
                 inputStream =
                     context.getResources().openRawResource(OFFLINE_TEST_IMAGE);
                 filename = OFFLINE_FILENAME;
-                
+                Log.d(TAG,
+                        "download OFFLINE");
             // Otherwise, download the file requested by the user.
             } else {
                 // Download the contents at the URL, which should
@@ -87,6 +88,8 @@ public class DownloadUtils {
                 inputStream =
                     (InputStream) new URL(url.toString()).getContent();
                 filename = url.toString();
+                Log.d(TAG,
+                        "ON-LINE download !!");
             }
 
             // Create an output file and save the image into it.

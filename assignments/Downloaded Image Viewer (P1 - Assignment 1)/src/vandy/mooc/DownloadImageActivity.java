@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 /**
@@ -20,7 +22,16 @@ public class DownloadImageActivity extends Activity {
      * Debugging tag used by the Android logger.
      */
     private final String TAG = getClass().getSimpleName();
+    
+    private Thread mThread;
 
+    private Handler mHandler = new Handler(Looper.getMainLooper());
+    
+    private Uri urlImage;
+    
+    private Uri urlToDownload;
+    
+    Intent mIntentToReturnUrl;
     /**
      * Hook method called when a new instance of Activity is created.
      * One time initialization code goes here, e.g., UI layout and
@@ -37,9 +48,11 @@ public class DownloadImageActivity extends Activity {
     	
         // Get the URL associated with the Intent data.
         // @@ TODO -- you fill in here.
-    	final Intent intent = getIntent();
-    	String URLString = intent.getStringExtra("myData");
-    	Uri url=Uri.parse(intent.getStringExtra("myData"));
+    	
+    	urlToDownload = getIntent().getData();
+    	Log.d(TAG,
+                "DownloadImageActivity::onCreate(): urlToDownload" + urlToDownload.toString());
+    	
     	
         // Download the image in the background, create an Intent that
         // contains the path to the image file, and set this as the
@@ -51,15 +64,34 @@ public class DownloadImageActivity extends Activity {
         // methods should be called in the background thread.  See
         // http://stackoverflow.com/questions/20412871/is-it-safe-to-finish-an-android-activity-from-a-background-thread
         // for more discussion about this topic.
+    	 
+    	 Runnable downloadRunnable = new Runnable() {
+            
+             @Override
+             public void run() {
+            	 
+            	 urlImage = DownloadUtils.downloadImage(getApplicationContext(), urlToDownload);
+            	 Log.d(TAG,
+                         "THREAD::DownloadImageActivity::onCreate(): urlImageToString: " + urlImage.toString());
+            	 mIntentToReturnUrl = new Intent();
+            	 mIntentToReturnUrl.setData(urlImage);
+                 setResult(RESULT_OK, mIntentToReturnUrl);   
+            	 
+            	 mHandler.post(new Runnable() {
+
+ 					@Override
+ 					public void run() {
+ 						Log.i(TAG, "Thread is running:" + Thread.currentThread().getName());
+ 						DownloadImageActivity.this.finish();
+ 					}
+
+ 				}); 
+                             	 
+             }             
+         };
     	
-    	Intent mIntentToReturnUrl = new Intent(Intent.ACTION_VIEW);
-    	DownloadUtils mDownloadUtils = new DownloadUtils();
-    	mIntentToReturnUrl.setData(mDownloadUtils.downloadImage(getApplicationContext(), url));
-    	
-        setResult(RESULT_OK, mIntentToReturnUrl);
-    	finish();
-    	
-    	
-    }
-   
+         mThread = new Thread(downloadRunnable);
+         mThread.start();
+         
+    }   
 }

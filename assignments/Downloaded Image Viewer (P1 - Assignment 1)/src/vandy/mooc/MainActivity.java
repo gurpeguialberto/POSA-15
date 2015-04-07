@@ -33,6 +33,8 @@ public class MainActivity extends LifecycleLoggingActivity {
      */
     private static final int DOWNLOAD_IMAGE_REQUEST = 1;
 
+	private static final String ACTION_VIEW = null;
+
     /**
      * EditText field for entering the desired URL to an image.
      */
@@ -115,10 +117,15 @@ public class MainActivity extends LifecycleLoggingActivity {
     protected void onActivityResult(int requestCode,
                                     int resultCode,
                                     Intent data) {
+    	Log.d(TAG, "Entering MainAct::onActResult  ResultCode: "  + resultCode 
+    			+ " ReqCode: " + requestCode);
         // Check if the started Activity completed successfully.
         // @@ TODO -- you fill in here, replacing true with the right
         // code.
         if (resultCode == RESULT_OK) {
+        	Toast.makeText(this,
+        			"OK resultCode Ok...",
+                    Toast.LENGTH_SHORT).show();
             // Check if the request code is what we're expecting.
             // @@ TODO -- you fill in here, replacing true with the
             // right code.
@@ -128,12 +135,16 @@ public class MainActivity extends LifecycleLoggingActivity {
                 // by passing in the path to the downloaded image
                 // file.
                 // @@ TODO -- you fill in here.
-            	Bundle extras = data.getExtras();
+            	Uri path = data.getData();
+            	Log.d(TAG, "Result OK. "  + resultCode + "  path: " + path.toString());
+            	Intent mIntent = makeGalleryIntent(path.toString());
+            	
+            	
             	//Intent mIntentToLaunchGallery = new Intent();
                 // Start the Gallery Activity.
                 // @@ TODO -- you fill in here.
             	            	
-            	startActivity(makeGalleryIntent(extras.getString("myData")));
+            	startActivity(mIntent);
             }
         }
         // Check if the started Activity did not complete successfully
@@ -142,10 +153,14 @@ public class MainActivity extends LifecycleLoggingActivity {
         // @@ TODO -- you fill in here, replacing true with the right
         // code.
         else if (resultCode == RESULT_CANCELED) {
-        	//toast "download error"
+        	Log.d(TAG, "Result CANCELED.  " + resultCode);
+        	//toast "download error"        	
         	Toast.makeText(this,
         			"download error resultCode NOT Ok...",
                     Toast.LENGTH_SHORT).show();
+        }
+        else{
+        	Log.d(TAG, "Result code value:  " + resultCode);
         }
     }    
 
@@ -158,8 +173,12 @@ public class MainActivity extends LifecycleLoggingActivity {
         // the image.
     	// TODO -- you fill in here, replacing "null" with the proper
     	// code.
-    	Intent mIntent = new Intent(Intent.ACTION_VIEW);
-    	mIntent.setDataAndType(Uri.fromFile(new File(pathToImageFile)), "image/*");
+    	Intent mIntent = new Intent();
+
+		mIntent.setAction(Intent.ACTION_VIEW);
+		mIntent.setDataAndType(Uri.fromFile(new File(pathToImageFile)), "image/*");
+    	//mIntent.setData(Uri.parse(pathToImageFile));
+    	//mIntent.setDataAndType(Uri.fromFile(new File(pathToImageFile)), "image/*");
     	//				MediaStore.EXTRA_OUTPUT
     	
         return mIntent;
